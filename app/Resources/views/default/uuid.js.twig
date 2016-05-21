@@ -1,0 +1,15 @@
+{% if rating is defined %}
+
+var div = document.createElement("div");
+div.style.position = "fixed";
+div.style.bottom = div.style.right = 0;
+div.style.height = div.style.width = "100px";
+div.style.backgroundColor = "blue";
+div.style.color = "white";
+div.style.fontWeight = "bold";
+div.innerHTML = "{{ rating|round(0) }} %";
+div.style.textAlign = "center";
+div.style.paddingTop = "35px";
+
+document.body.appendChild(div);
+{% endif %}
