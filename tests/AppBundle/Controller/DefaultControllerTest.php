@@ -11,21 +11,13 @@ class DefaultControllerTest extends WebTestCase
     /** @var EntityManager */
     private $em;
 
-    /** @var  User */
-    private $user;
+    private $entities = [];
 
     public function setUp()
     {
         self::bootKernel();
-        $uuid = uniqid('test--');
-
-        $user = new User();
-        $user->setUuid($uuid);
-        $this->user = $user;
 
         $this->em = self::$kernel->getContainer()->get('doctrine')->getManager();
-
-        $this->em->persist($user);
     }
 
     public function testIndex()
@@ -40,9 +32,19 @@ class DefaultControllerTest extends WebTestCase
 
     public function testWidgetCallWhenUserExists()
     {
+        $uuid = uniqid('test--');
+
+        $user = new User();
+        $user->setUuid($uuid);
+        $user->setRating(61);
+
+        $this->entities[] = $user;
+        $this->em->persist($user);
+        $this->em->flush();
+
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/widget/'.$this->user->getUuid().'.js');
+        $crawler = $client->request('GET', '/widget/'.$user->getUuid().'.js');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResponse()->getContent());
@@ -63,6 +65,11 @@ class DefaultControllerTest extends WebTestCase
     {
         parent::tearDown();
 
-        $this->em->remove($this->user);
+        foreach ($this->entities as $entity) {
+            $entity = $this->em->merge($entity);
+            $this->em->remove($entity);
+        }
+
+        $this->em->flush();
     }
 }
