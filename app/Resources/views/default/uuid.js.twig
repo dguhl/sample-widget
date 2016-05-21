@@ -11,5 +11,30 @@ div.innerHTML = "{{ rating|round(0) }} %";
 div.style.textAlign = "center";
 div.style.paddingTop = "35px";
 
+div.setAttribute('style', "position: fixed; "
+        + "width: 100px; "
+        + "height: 100px; "
+        + "bottom: -95px; "
+        + "right: 0; "
+        + "background: linear-gradient(#159CD6, #80C9E8); "
+        + "color: white; "
+        + "text-align: center; "
+        + "font-weight: bold; "
+        + "padding-top: 35px;"
+        + "transition: all 0.4s ease; "
+);
+
+div.setAttribute("id", "uuidratingwidgetajkdf93sffbvnb3829247");
+
+var css = "#uuidratingwidgetajkdf93sffbvnb3829247:hover {" +
+        "bottom: 0px !important" +
+        "}";
+
+var style = document.createElement("style");
+style.type = "text/css";
+style.appendChild(document.createTextNode(css));
+
+
 document.body.appendChild(div);
+document.body.appendChild(style);
 {% endif %}
