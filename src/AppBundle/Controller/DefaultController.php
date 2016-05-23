@@ -33,7 +33,7 @@ class DefaultController extends Controller
         $user = $userRepository->findByUuid($uuid);
 
         if ($user)
-            $response->setContent($this->renderView('default/uuid.js.twig', [
+            $response->setContent($this->renderView('AppBundle::uuid.js.twig', [
                 'rating' => $user->getRating()
             ]));
 
