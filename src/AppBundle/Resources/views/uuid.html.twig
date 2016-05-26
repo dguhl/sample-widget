@@ -1,0 +1,27 @@
+<style type="text/css">
+    /* We make an exception and do it inline */
+    table {
+        border: 1px solid blue;
+    }
+
+    th, td {
+        border-right: 1px solid lightblue;
+        padding:7px;
+    }
+
+    th:last-child, td:last-child {
+        border-right: 0;
+    }
+</style>
+<table>
+    <tr>
+        <th>Uuid</th>
+        <th>Reviews</th>
+        <th>Rating</th>
+    </tr>
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.reviews|length }}</td>
+        <td>{{ user.getAverageRating() }}</td>
+    </tr>
+</table>

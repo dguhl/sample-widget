@@ -1,0 +1,3 @@
+{% if user %}
+{{ user|serialize("json")|raw }}
+{% endif %}

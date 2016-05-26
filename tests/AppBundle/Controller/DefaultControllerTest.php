@@ -30,32 +30,57 @@ class DefaultControllerTest extends WebTestCase
         $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
     }
 
-    public function testWidgetCallWhenUserExists()
+    protected function getUser()
     {
-        $uuid = uniqid('test--');
+        return $this->em
+            ->getRepository('AppBundle:User')
+            ->createQueryBuilder('u')
+            ->where('u.id IS NOT NULL')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 
-        $user = new User();
-        $user->setUuid($uuid);
-        $user->setRating(61);
-
-        $this->entities[] = $user;
-        $this->em->persist($user);
-        $this->em->flush();
+    public function testWidgetCallsWhenUserExists()
+    {
+        $user = $this->getUser();
 
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/widget/'.$user->getUuid().'.js');
+        $urlPart = '/widget/'.$user->getUuid();
+
+        $client->request('GET', $urlPart.'.js');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertNotEmpty($client->getResponse()->getContent());
 
+        $client->request('GET', $urlPart.'.json');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertNotEmpty($client->getResponse()->getContent());
+
+        $client->request('GET', $urlPart.'.html');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertNotEmpty($client->getResponse()->getContent());
     }
 
     public function testWidgetCallWhenUserNotExists()
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/widget/notexistinguserhere.js');
+        $client->request('GET', '/widget/notexistinguserhere.js');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEmpty($client->getResponse()->getContent());
+
+        $client->request('GET', '/widget/notexistinguserhere.json');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEmpty($client->getResponse()->getContent());
+
+        $client->request('GET', '/widget/notexistinguserhere.html');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEmpty($client->getResponse()->getContent());

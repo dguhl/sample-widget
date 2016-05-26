@@ -2,11 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\User;
 use AppBundle\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Intl\Exception\NotImplementedException;
 
 class DefaultController extends Controller
 {
@@ -22,20 +24,34 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/widget/{uuid}.js", name="widget")
+     * @Route(
+     *     "/widget/{id}.{_format}",
+     *     name="widget",
+     *     requirements={
+     *          "_format": "html|js|json|png|xml"
+     *     }
+     * )
      */
-    public function widgetAction(Request $request, $uuid)
+    public function widgetAction(Request $request, $id)
     {
         $response = new Response();
+        $format   = $request->getRequestFormat();
+
+        if ($format == 'png')
+            throw new NotImplementedException('The feature does not exist yet.');
 
         /** @var UserRepository $userRepository */
         $userRepository = $this->getDoctrine()->getManager()->getRepository('AppBundle:User');
-        $user = $userRepository->findByUuid($uuid);
 
-        if ($user)
-            $response->setContent($this->renderView('AppBundle::uuid.js.twig', [
-                'rating' => $user->getRating()
+        /** @var User $user */
+        $user = $userRepository->findOneById($id);
+
+        if ($user) {
+            $response->setContent($this->renderView('AppBundle::uuid.'.$format.'.twig', [
+                'user'   => $user,
+                'rating' => $user->getAverageRating()
             ]));
+        }
 
         return $response;
     }

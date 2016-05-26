@@ -16,3 +16,4 @@
 /web/bundles/
 /vm/
 /.idea/
+!phpunit

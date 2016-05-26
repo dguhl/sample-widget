@@ -38,7 +38,7 @@ class DefaultControllerTest extends KernelTestCase
         $uuid = uniqid('test--');
 
         $user = new User();
-        $user->setUuid($uuid);
+        $user->setId($uuid);
 
         $this->em->persist($user);
 

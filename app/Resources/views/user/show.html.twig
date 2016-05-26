@@ -10,12 +10,14 @@
                 <td>{{ user.id }}</td>
             </tr>
             <tr>
-                <th>Uuid</th>
-                <td>{{ user.uuid }}</td>
-            </tr>
-            <tr>
-                <th>Rating</th>
-                <td>{{ user.rating }}</td>
+                <th>Reviews</th>
+                <td>
+                    <ul>
+                    {% for review in user.reviews %}
+                        <li>{{ review.rating }} %</li>
+                    {% endfor %}
+                    </ul>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -23,9 +25,6 @@
     <ul>
         <li>
             <a href="{{ path('user_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('user_edit', { 'id': user.id }) }}">Edit</a>
         </li>
         <li>
             {{ form_start(delete_form) }}

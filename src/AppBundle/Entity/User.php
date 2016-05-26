@@ -3,43 +3,35 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\UniqueConstraint;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@UniqueConstraint(name="uuid", columns={"uuid"})})
+ * @ORM\Table(name="user")})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="guid", unique=true)
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
-     * @var string
+     * @var Review[]
      *
-     * @ORM\Column(name="uuid", type="string")
+     * @ORM\OneToMany(targetEntity="Review", mappedBy="user")
      */
-    private $uuid;
+    private $reviews;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="rating", type="integer")
-     */
-    private $rating;
-
-    /**
-     * Get id
-     *
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -47,37 +39,46 @@ class User
     }
 
     /**
-     * @return string
+     * @param string $id
      */
-    public function getUuid()
+    public function setId($id)
     {
-        return $this->uuid;
+        $this->id = $id;
     }
 
     /**
-     * @param string $uuid
+     * @return Review[]
      */
-    public function setUuid($uuid)
+    public function getReviews()
     {
-        $this->uuid = $uuid;
+        return $this->reviews;
+    }
+
+    /**
+     * @param Review[] $reviews
+     */
+    public function setReviews($reviews)
+    {
+        $this->reviews = $reviews;
     }
 
     /**
      * @return int
      */
-    public function getRating()
+    public function getAverageRating()
     {
-        return $this->rating;
+        $reviews = $this->getReviews();
+        $sumRating = 0;
+        
+        if (count($reviews) == 0)
+            return 0;   // No average from zero elements.
+        
+        foreach($reviews as $review)
+        {
+            $sumRating += $review->getRating();
+        }
+        
+        return round(($sumRating / count($reviews)));
     }
-
-    /**
-     * @param int $rating
-     */
-    public function setRating($rating)
-    {
-        $this->rating = $rating;
-    }
-
-
 }
 
